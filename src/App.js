@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { auth, firestore } from "./firebase";
+import logo from "./logo.svg";
+import "./App.css";
+import emailjs from "emailjs-com";
+
+///env
+emailjs.init("TdmGXBSlM9g0OIa13");
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const sendEmail = () => {
+		///env
+		const serviceId = "service_k63n2um";
+		const templateId = "template_kwr4qcr";
+
+		const templateParams = {
+			event_name: "TEST EVENT",
+		};
+
+		///See sendForm
+		emailjs
+			.send(serviceId, templateId, templateParams)
+			.then(() => {
+				console.log("Email sent successfully");
+			})
+			.catch((error) => {
+				console.error("Error occurred while sending email", error);
+			});
+	};
+
+	return (
+		<div className="App">
+			<header>Program Form</header>
+			<div className="content">
+				<button onClick={sendEmail()}>Send email</button>
+			</div>
+		</div>
+	);
 }
 
 export default App;
