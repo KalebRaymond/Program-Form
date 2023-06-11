@@ -1,1 +1,13 @@
-.ActionButton {}
+button {
+	background-color: #ddd;
+	border: 1px solid #888;
+	padding: 1rem 1rem;
+	margin: 1rem;
+	width: 15rem;
+	font-weight: bold;
+
+	&:hover {
+		background-color: #bbb;
+		cursor: pointer;
+	}
+}

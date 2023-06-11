@@ -1,0 +1,33 @@
+.FormInput {
+	margin: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: left;
+
+	.labelContainer {
+		text-align: left;
+		margin-bottom: 0.5em;
+
+		label {
+			font-weight: bold;
+		}
+	}
+
+	.inputContainer {
+		text-align: left;
+
+		input,
+		select,
+		textarea {
+			background-color: #fff;
+			padding: 0.5rem;
+			border: 1px solid #bbb;
+			min-width: 15rem;
+		}
+
+		textarea {
+			width: 25rem;
+			height: 5rem;
+		}
+	}
+}
