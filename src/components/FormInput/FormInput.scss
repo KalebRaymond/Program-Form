@@ -29,5 +29,23 @@
 			width: 25rem;
 			height: 5rem;
 		}
+
+		.react-datepicker {
+			font-size: 1rem;
+		}
+
+		.react-datepicker__input-container {
+			.react-datepicker__close-icon {
+				position: relative;
+				margin: 0rem;
+				margin-left: 1rem;
+				width: 2rem;
+				height: 2rem;
+
+				&:hover {
+					background-color: transparent;
+				}
+			}
+		}
 	}
 }

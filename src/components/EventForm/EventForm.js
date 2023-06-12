@@ -92,10 +92,12 @@ const EventForm = () => {
 			<form onSubmit={handleSubmit}>
 				<FormInput label={"Event Date"}>
 					<DatePicker
+						showPopperArrow={false}
 						selected={formState.eventDate}
 						placeholderText={"Event Date"}
 						isClearable
 						onChange={(date) => handleDatePickerChange("eventDate", date)}
+						minDate={new Date()}
 					></DatePicker>
 				</FormInput>
 				<FormInput label={"Event Start Time"}>
@@ -198,12 +200,14 @@ const EventForm = () => {
 				</FormInput>
 				<FormInput label={"Marketing Start Date"}>
 					<DatePicker
+						showPopperArrow={false}
 						selected={formState.marketingStartDate}
 						placeholderText={"Marketing Start Date"}
 						isClearable
 						onChange={(date) =>
 							handleDatePickerChange("marketingStartDate", date)
 						}
+						minDate={new Date()}
 					></DatePicker>
 				</FormInput>
 				<FormInput label={"Are there signups?"}>
@@ -217,10 +221,12 @@ const EventForm = () => {
 				</FormInput>
 				<FormInput label={"Signups Open Date"}>
 					<DatePicker
+						showPopperArrow={false}
 						selected={formState.signupsOpenDate}
 						placeholderText={"Signups Open Date"}
 						isClearable
 						onChange={(date) => handleDatePickerChange("signupsOpenDate", date)}
+						minDate={new Date()}
 					></DatePicker>
 				</FormInput>
 				<FormInput label={"Signups Close Date"}>

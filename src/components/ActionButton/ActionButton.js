@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import styles from "./ActionButton.module.scss";
+import styles from "./ActionButton.scss";
 
 const ActionButton = (props) => (
-	<button type={props.type} onClick={props.onClick}>
+	<button className="actionButton" type={props.type} onClick={props.onClick}>
 		{props.buttonText}
 	</button>
 );
