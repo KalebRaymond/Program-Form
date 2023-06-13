@@ -3,6 +3,8 @@ import "./App.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import EventForm from "./components/EventForm/EventForm";
 
+//Remove events from database
+
 function App() {
 	return (
 		<div className="App">

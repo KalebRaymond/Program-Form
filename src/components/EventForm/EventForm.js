@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styles from "./EventForm.module.scss";
 
@@ -9,7 +9,32 @@ import emailjs from "emailjs-com";
 import FormInput from "../FormInput/FormInput";
 
 const EventForm = () => {
-	const defaultFormState = {
+	const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+	///Put this in a db service file
+	const getUpcomingEventsPromise = () => {
+		return db
+			.collection("events")
+			.get()
+			.then((collection) => {
+				const upcomingEvents = collection.docs.map((doc) => doc.data());
+				return upcomingEvents;
+			})
+			.catch((error) => {
+				console.log("Error fetching db events", error);
+				return [];
+			});
+	};
+
+	useEffect(() => {
+		getUpcomingEventsPromise().then((events) => setUpcomingEvents(events));
+	}, []);
+
+	useEffect(() => {
+		console.log("upcomingEvents", upcomingEvents);
+	}, [upcomingEvents]);
+
+	const defaultFormContent = {
 		eventDate: "",
 		startTime: "",
 		endTime: "",
@@ -27,7 +52,8 @@ const EventForm = () => {
 		specialAdvertising: "",
 		organizations: "",
 	};
-	const [formState, setFormState] = useState(defaultFormState);
+
+	const [formContent, setFormContent] = useState(defaultFormContent);
 	emailjs.init("TdmGXBSlM9g0OIa13");
 
 	const sendEmail = (eventData) => {
@@ -59,30 +85,40 @@ const EventForm = () => {
 		}
 	};
 
+	const formIsValid = () => {
+		//Return false if any form fields are empty, true otherwise
+		return Object.keys(formContent).reduce(
+			(acc, i) => acc && formContent[i] && formContent[i] !== "",
+			true
+		);
+	};
+
 	const handleInputChange = (event) => {
 		const inputName = event.target.name;
 		const value = event.target.value;
 
-		console.log("Input changed", { inputName, value });
+		console.log("Input changed", {
+			inputName,
+			value,
+		});
 
-		setFormState({
-			...formState,
+		setFormContent({
+			...formContent,
 			[inputName]: value,
 		});
 	};
 
 	const handleDatePickerChange = (name, date) => {
-		console.log("Datepicker changed", { name, date });
-		setFormState({
-			...formState,
+		setFormContent({
+			...formContent,
 			[name]: date,
 		});
 	};
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		console.log("Event submitted", formState);
-		//addEventToDatabase(formState);
+		console.log("Event submitted", formContent);
+		//addEventToDatabase(formContent);
 
 		///Show event submitted screen
 	};
@@ -93,7 +129,7 @@ const EventForm = () => {
 				<FormInput label={"Event Date"}>
 					<DatePicker
 						showPopperArrow={false}
-						selected={formState.eventDate}
+						selected={formContent.eventDate}
 						placeholderText={"Event Date"}
 						isClearable
 						onChange={(date) => handleDatePickerChange("eventDate", date)}
@@ -105,7 +141,7 @@ const EventForm = () => {
 						name={"startTime"}
 						placeholder={"Event Start Time"}
 						type="time"
-						value={formState.startTime}
+						value={formContent.startTime}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -114,7 +150,7 @@ const EventForm = () => {
 						placeholder={"Event End Time"}
 						name={"endTime"}
 						type="time"
-						value={formState.endTime}
+						value={formContent.endTime}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -123,7 +159,7 @@ const EventForm = () => {
 						placeholder={"Event Name"}
 						name={"eventName"}
 						type="text"
-						value={formState.eventName}
+						value={formContent.eventName}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -135,7 +171,7 @@ const EventForm = () => {
 					<textarea
 						placeholder={"Event Description"}
 						name={"description"}
-						value={formState.description}
+						value={formContent.description}
 						onChange={handleInputChange}
 					></textarea>
 				</FormInput>
@@ -144,7 +180,7 @@ const EventForm = () => {
 						placeholder={"Email"}
 						name={"email"}
 						type="email"
-						value={formState.email}
+						value={formContent.email}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -152,7 +188,7 @@ const EventForm = () => {
 					<select
 						name={"committee"}
 						type="text"
-						value={formState.committee}
+						value={formContent.committee}
 						onChange={handleInputChange}
 					>
 						<option value="Advertising">Advertising</option>
@@ -176,7 +212,7 @@ const EventForm = () => {
 						placeholder={"Event Location"}
 						name={"location"}
 						type="text"
-						value={formState.location}
+						value={formContent.location}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -185,7 +221,7 @@ const EventForm = () => {
 						placeholder={"Ticket Price"}
 						name={"ticketPrice"}
 						type="text"
-						value={formState.ticketPrice}
+						value={formContent.ticketPrice}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -194,14 +230,14 @@ const EventForm = () => {
 						placeholder={"Are tickets refundable?"}
 						name={"ticketsRefundable"}
 						type="text"
-						value={formState.ticketsRefundable}
+						value={formContent.ticketsRefundable}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
 				<FormInput label={"Marketing Start Date"}>
 					<DatePicker
 						showPopperArrow={false}
-						selected={formState.marketingStartDate}
+						selected={formContent.marketingStartDate}
 						placeholderText={"Marketing Start Date"}
 						isClearable
 						onChange={(date) =>
@@ -215,14 +251,14 @@ const EventForm = () => {
 						placeholder={"Are there signups"}
 						name={"signups"}
 						type="text"
-						value={formState.signups}
+						value={formContent.signups}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
 				<FormInput label={"Signups Open Date"}>
 					<DatePicker
 						showPopperArrow={false}
-						selected={formState.signupsOpenDate}
+						selected={formContent.signupsOpenDate}
 						placeholderText={"Signups Open Date"}
 						isClearable
 						onChange={(date) => handleDatePickerChange("signupsOpenDate", date)}
@@ -233,7 +269,7 @@ const EventForm = () => {
 					<input
 						name={"signupsCloseDate"}
 						type="date"
-						value={formState.signupsCloseDate}
+						value={formContent.signupsCloseDate}
 						onChange={handleInputChange}
 					></input>
 				</FormInput>
@@ -241,7 +277,7 @@ const EventForm = () => {
 					<textarea
 						placeholder={"Special Advertising"}
 						name={"specialAdvertising"}
-						value={formState.specialAdvertising}
+						value={formContent.specialAdvertising}
 						onChange={handleInputChange}
 					></textarea>
 				</FormInput>
@@ -253,12 +289,16 @@ const EventForm = () => {
 					<textarea
 						placeholder={"Organizations"}
 						name={"organizations"}
-						value={formState.organizations}
+						value={formContent.organizations}
 						onChange={handleInputChange}
 					></textarea>
 				</FormInput>
 				<div className="buttonSection">
-					<ActionButton type="submit" buttonText={"Submit"}></ActionButton>
+					<ActionButton
+						type="submit"
+						buttonText={"Submit"}
+						disabled={!formIsValid()}
+					></ActionButton>
 				</div>
 			</form>
 		</div>

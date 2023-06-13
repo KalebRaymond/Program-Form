@@ -8,6 +8,11 @@ const FormInput = (props) => (
 			<label>{props.label}</label>
 		</div>
 		<div className="inputContainer">{props.children}</div>
+		{props.error && props.error.length && (
+			<div className="errorContainer">
+				<span className="error">{props.error}</span>
+			</div>
+		)}
 	</div>
 );
 

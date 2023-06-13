@@ -6,7 +6,11 @@
 	width: 15rem;
 	font-weight: bold;
 
-	&:hover {
+	&.disabled {
+		background-color: #aaa;
+	}
+
+	&:hover:enabled {
 		background-color: #bbb;
 		cursor: pointer;
 	}
