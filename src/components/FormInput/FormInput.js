@@ -7,10 +7,12 @@ const FormInput = (props) => (
 		<div className="labelContainer">
 			<label>{props.label}</label>
 		</div>
-		<div className="inputContainer">{props.children}</div>
-		{props.error && props.error.length && (
+		<div className={`inputContainer ${props.error ? "hasError" : ""}`}>
+			{props.children}
+		</div>
+		{props.error && (
 			<div className="errorContainer">
-				<span className="error">{props.error}</span>
+				<span className="error">{props.error.message}</span>
 			</div>
 		)}
 	</div>

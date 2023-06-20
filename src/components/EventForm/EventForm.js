@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import emailjs from "emailjs-com";
 import FormInput from "../FormInput/FormInput";
 import { Controller, useForm } from "react-hook-form";
+import UpcomimgEventsTimePreview from "../UpcomingEventsTimePreview/UpcomingEventsTimePreview";
 
 const EventForm = () => {
 	emailjs.init("TdmGXBSlM9g0OIa13");
@@ -22,27 +23,44 @@ const EventForm = () => {
 		control,
 		register,
 		handleSubmit,
+		reset,
+		watch,
 		formState: { errors },
 	} = useForm();
 
-	const onSubmit = (data) => {
-		console.log("Form submitted", data);
-		// event.preventDefault();
+	const ticketsValue = watch("tickets");
+	const signupsValue = watch("signups");
+	const eventDateValue = watch("eventDate");
 
-		// const serializedFormContent = formContent;
+	const onSubmit = (data, event) => {
+		event.preventDefault();
 
-		// serializedFormContent.eventDate =
-		// 	serializedFormContent.eventDate.toDateString();
-		// serializedFormContent.marketingStartDate =
-		// 	serializedFormContent.marketingStartDate.toDateString();
-		// serializedFormContent.signupsOpenDate =
-		// 	serializedFormContent.signupsOpenDate.toDateString();
-		// serializedFormContent.signupsCloseDate = new Date(
-		// 	serializedFormContent.signupsCloseDate
-		// ).toDateString();
+		const serializedData = data;
 
-		// console.log("Event submitted", serializedFormContent);
-		// addEventToDatabase(serializedFormContent);
+		if (serializedData.eventDate) {
+			serializedData.eventDate = serializedData.eventDate.toDateString();
+		}
+
+		if (serializedData.marketingStartDate) {
+			serializedData.marketingStartDate =
+				serializedData.marketingStartDate.toDateString();
+		}
+
+		if (serializedData.signupsOpenDate) {
+			serializedData.signupsOpenDate =
+				serializedData.signupsOpenDate.toDateString();
+		}
+
+		if (serializedData.signupsCloseDate) {
+			serializedData.signupsCloseDate = new Date(
+				serializedData.signupsCloseDate
+			).toDateString();
+		}
+
+		console.log("Form submitted", serializedData);
+		reset();
+
+		// addEventToDatabase(serializedData);
 
 		///Show event submitted screen
 	};
@@ -78,29 +96,38 @@ const EventForm = () => {
 	*/
 
 	useEffect(() => {
+		const testEvents = [
+			{
+				eventName:
+					"Event with reaaaaaalllllyyyyyyyyyyyyyyyy loooooooooooooooong name",
+				eventDate: "06/24/2023",
+				startTime: "10:00AM",
+				endTime: "11:00AM",
+				location: "Lawn",
+			},
+			{
+				eventName: "Event 2",
+				eventDate: "06/24/2023",
+				startTime: "11:00AM",
+				endTime: "11:00AM",
+				location: "Assembly Room",
+			},
+			{
+				eventName: "Event 3",
+				eventDate: "06/24/2023",
+				startTime: "04:00PM",
+				endTime: "6:00PM",
+				location: "Cathedral of Learning",
+			},
+		];
+
+		setUpcomingEvents(testEvents);
+		setUpcomingEventDates(testEvents.map((event) => new Date(event.eventDate)));
+	}, []);
+
+	useEffect(() => {
 		console.log("upcomingEvents", upcomingEvents);
 	}, [upcomingEvents]);
-
-	const defaultFormContent = {
-		eventDate: "",
-		startTime: "",
-		endTime: "",
-		eventName: "",
-		description: "",
-		email: "",
-		committee: "Advertising",
-		location: "",
-		ticketPrice: "",
-		ticketsRefundable: "",
-		marketingStartDate: "",
-		signups: "",
-		signupsOpenDate: "",
-		signupsCloseDate: "",
-		specialAdvertising: "",
-		organizations: "",
-	};
-
-	const [formContent, setFormContent] = useState(defaultFormContent);
 
 	const sendEmail = (eventData) => {
 		const serviceId = "service_k63n2um";
@@ -132,31 +159,6 @@ const EventForm = () => {
 		}
 	};
 
-	const formIsValid = () => {
-		//Return false if any form fields are empty, true otherwise
-		return Object.keys(formContent).reduce(
-			(acc, i) => acc && formContent[i] && formContent[i] !== "",
-			true
-		);
-	};
-
-	const handleInputChange = (event) => {
-		const inputName = event.target.name;
-		const value = event.target.value;
-
-		setFormContent({
-			...formContent,
-			[inputName]: value,
-		});
-	};
-
-	const handleDatePickerChange = (name, date) => {
-		setFormContent({
-			...formContent,
-			[name]: date,
-		});
-	};
-
 	return (
 		<div className={styles.EventForm}>
 			<form onSubmit={handleSubmit(onSubmit)}>
@@ -164,43 +166,72 @@ const EventForm = () => {
 					<Controller
 						control={control}
 						name="eventDate"
-						rules={{ required: true }}
+						rules={{
+							required: { value: true, message: "This field is required" },
+						}}
 						render={({ field }) => (
-							<DatePicker
-								showPopperArrow={false}
-								selected={field.value || ""}
-								placeholderText={"Event Date"}
-								highlightDates={[
-									{ "react-datepicker__day--highlighted": upcomingEventDates },
-								]}
-								isClearable
-								onChange={(date) => field.onChange(date)}
-								minDate={new Date()}
-							></DatePicker>
+							<div className="dateAndTimeContainer">
+								<div className="datePickerContainer">
+									<DatePicker
+										className="input"
+										showPopperArrow={false}
+										selected={field.value || ""}
+										placeholderText={"Event Date"}
+										highlightDates={[
+											{
+												"react-datepicker__day--highlighted":
+													upcomingEventDates,
+											},
+										]}
+										isClearable
+										onChange={(date) => field.onChange(date)}
+										minDate={new Date()}
+									></DatePicker>
+								</div>
+								{eventDateValue && (
+									<UpcomimgEventsTimePreview
+										selectedDate={eventDateValue}
+										upcomingEvents={upcomingEvents}
+									></UpcomimgEventsTimePreview>
+								)}
+							</div>
 						)}
 					></Controller>
 				</FormInput>
+
 				<FormInput label={"Event Start Time"} error={errors.startTime}>
 					<input
+						className="input"
 						placeholder={"Event Start Time"}
 						type="time"
-						{...register("startTime", { required: true })}
+						{...register("startTime", {
+							required: { value: true, message: "This field is required" },
+						})}
 					></input>
 				</FormInput>
+
 				<FormInput label={"Event End Time"} error={errors.endTime}>
 					<input
+						className="input"
 						placeholder={"Event End Time"}
 						type="time"
-						{...register("endTime", { required: true })}
+						{...register("endTime", {
+							required: { value: true, message: "This field is required" },
+						})}
 					></input>
 				</FormInput>
+
 				<FormInput label={"Event Name"} error={errors.eventName}>
 					<input
+						className="input"
 						placeholder={"Event Name"}
 						type="text"
-						{...register("eventName", { required: true })}
+						{...register("eventName", {
+							required: { value: true, message: "This field is required" },
+						})}
 					></input>
 				</FormInput>
+
 				<FormInput
 					label={
 						"Event Description (please include if there is an attendance limit)"
@@ -208,21 +239,32 @@ const EventForm = () => {
 					error={errors.eventDescription}
 				>
 					<textarea
+						className="textarea"
 						placeholder={"Event Description"}
-						{...register("description", { required: true })}
+						{...register("description", {
+							required: { value: true, message: "This field is required" },
+						})}
 					></textarea>
 				</FormInput>
+
 				<FormInput label={"Email"} error={errors.email}>
 					<input
+						className="input"
 						placeholder={"Email"}
 						type="email"
-						{...register("email", { required: true })}
+						{...register("email", {
+							required: { value: true, message: "This field is required" },
+						})}
 					></input>
 				</FormInput>
+
 				<FormInput label={"Committee"} error={errors.committee}>
 					<select
+						className="select"
 						name={"committee"}
-						{...register("committee", { required: true })}
+						{...register("committee", {
+							required: { value: true, message: "This field is required" },
+						})}
 					>
 						<option value="Advertising">Advertising</option>
 						<option value="Design">Design</option>{" "}
@@ -236,6 +278,7 @@ const EventForm = () => {
 						<option value="The Arts">The Arts</option>
 					</select>
 				</FormInput>
+
 				<FormInput
 					label={
 						"Event Location (ex. Cathedral Lawn, Zoom Webinar, Zoom Meeting, etc.)"
@@ -243,50 +286,115 @@ const EventForm = () => {
 					error={errors.eventLocation}
 				>
 					<input
+						className="input"
 						placeholder={"Event Location"}
 						type="text"
-						{...register("description", { required: true })}
+						{...register("eventLocation", {
+							required: { value: true, message: "This field is required" },
+						})}
 					></input>
 				</FormInput>
-				<FormInput label={"Ticket Price"} error={errors.ticketPrice}>
-					<input
-						placeholder={"Ticket Price"}
-						type="text"
-						{...register("ticketPrice", { required: true })}
-					></input>
-				</FormInput>
-				<FormInput
-					label={"If tickets cost money, are they refundable?"}
-					error={errors.ticketsRefundable}
-				>
+
+				<FormInput label={"Are there tickets?"} error={errors.tickets}>
 					<fieldset className="radioGroup">
 						<div className="radioInput">
 							<input
+								className="radio"
 								type="radio"
-								id="ticketsRefundableYes"
+								id="ticketsYes"
 								value="Yes"
-								{...register("ticketsRefundable", { required: true })}
+								{...register("tickets", {
+									required: { value: true, message: "This field is required" },
+								})}
 							></input>
-							<label htmlFor="ticketsRefundableYes">Yes</label>
+							<label className="radioLabel" htmlFor="ticketsYes">
+								Yes
+							</label>
 						</div>
 						<div className="radioInput">
 							<input
+								className="radio"
 								type="radio"
-								id="ticketsRefundableNo"
+								id="ticketsNo"
 								value="No"
-								{...register("ticketsRefundable", { required: true })}
+								{...register("tickets", {
+									required: { value: true, message: "This field is required" },
+								})}
 							></input>
-							<label htmlFor="ticketsRefundableNo">No</label>
+							<label className="radioLabel" htmlFor="ticketsNo">
+								No
+							</label>
 						</div>
 					</fieldset>
 				</FormInput>
+
+				{ticketsValue === "Yes" && (
+					<>
+						<FormInput label={"Ticket Price"} error={errors.ticketPrice}>
+							<input
+								className="input"
+								placeholder={"Ticket Price"}
+								type="text"
+								{...register("ticketPrice", {
+									required: { value: true, message: "This field is required" },
+								})}
+							></input>
+						</FormInput>
+
+						<FormInput
+							label={"If tickets cost money, are they refundable?"}
+							error={errors.ticketsRefundable}
+						>
+							<fieldset className="radioGroup">
+								<div className="radioInput">
+									<input
+										className="radio"
+										type="radio"
+										id="ticketsRefundableYes"
+										value="Yes"
+										{...register("ticketsRefundable", {
+											required: {
+												value: true,
+												message: "This field is required",
+											},
+										})}
+									></input>
+									<label className="radioLabel" htmlFor="ticketsRefundableYes">
+										Yes
+									</label>
+								</div>
+								<div className="radioInput">
+									<input
+										className="radio"
+										type="radio"
+										id="ticketsRefundableNo"
+										value="No"
+										{...register("ticketsRefundable", {
+											required: {
+												value: true,
+												message: "This field is required",
+											},
+										})}
+									></input>
+									<label className="radioLabel" htmlFor="ticketsRefundableNo">
+										No
+									</label>
+								</div>
+							</fieldset>
+						</FormInput>
+					</>
+				)}
+
 				<FormInput label={"Marketing Start Date"}>
 					<Controller
 						control={control}
 						name="marketingStartDate"
-						rules={{ required: true }}
+						rules={{
+							required: { value: true, message: "This field is required" },
+						}}
 						render={({ field }) => (
 							<DatePicker
+								className="input"
 								showPopperArrow={false}
 								selected={field.value || ""}
 								placeholderText={"Marketing Start Date"}
@@ -303,66 +411,93 @@ const EventForm = () => {
 						)}
 					></Controller>
 				</FormInput>
+
 				<FormInput label={"Are there signups?"} error={errors.signups}>
 					<fieldset className="radioGroup">
 						<div className="radioInput">
 							<input
+								className="radio"
 								type="radio"
 								id="signupsYes"
 								value="Yes"
-								{...register("signups", { required: true })}
+								{...register("signups", {
+									required: { value: true, message: "This field is required" },
+								})}
 							></input>
-							<label htmlFor="signupsYes">Yes</label>
+							<label className="radioLabel" htmlFor="signupsYes">
+								Yes
+							</label>
 						</div>
 						<div className="radioInput">
 							<input
+								className="radio"
 								type="radio"
 								id="signupsNo"
 								value="No"
-								{...register("signups", { required: true })}
+								{...register("signups", {
+									required: { value: true, message: "This field is required" },
+								})}
 							></input>
-							<label htmlFor="signupsNo">No</label>
+							<label className="radioLabel" htmlFor="signupsNo">
+								No
+							</label>
 						</div>
 					</fieldset>
 				</FormInput>
-				<FormInput label={"Signups Open Date"}>
-					<Controller
-						control={control}
-						name="signupsOpenDate"
-						rules={{ required: true }}
-						render={({ field }) => (
-							<DatePicker
-								showPopperArrow={false}
-								selected={field.value || ""}
-								placeholderText={"Signups Open Date"}
-								isClearable
-								highlightDates={[
-									{
-										"react-datepicker__day--highlighted":
-											upcomingSignupsOpenDates,
-									},
-								]}
-								onChange={(date) => field.onChange(date)}
-								minDate={new Date()}
-							></DatePicker>
-						)}
-					></Controller>
-				</FormInput>
-				<FormInput label={"Signups Close Date"} error={errors.signupsCloseDate}>
-					<input
-						type="date"
-						{...register("signupsCloseDate", { required: false })}
-					></input>
-				</FormInput>
+
+				{signupsValue === "Yes" && (
+					<>
+						<FormInput label={"Signups Open Date"}>
+							<Controller
+								control={control}
+								name="signupsOpenDate"
+								rules={{
+									required: { value: true, message: "This field is required" },
+								}}
+								render={({ field }) => (
+									<DatePicker
+										className="input"
+										showPopperArrow={false}
+										selected={field.value || ""}
+										placeholderText={"Signups Open Date"}
+										isClearable
+										highlightDates={[
+											{
+												"react-datepicker__day--highlighted":
+													upcomingSignupsOpenDates,
+											},
+										]}
+										onChange={(date) => field.onChange(date)}
+										minDate={new Date()}
+									></DatePicker>
+								)}
+							></Controller>
+						</FormInput>
+
+						<FormInput
+							label={"Signups Close Date"}
+							error={errors.signupsCloseDate}
+						>
+							<input
+								className="input"
+								type="date"
+								{...register("signupsCloseDate", { required: false })}
+							></input>
+						</FormInput>
+					</>
+				)}
+
 				<FormInput
 					label={"Any special advertising?"}
 					error={errors.specialAdvertising}
 				>
 					<textarea
+						className="textarea"
 						placeholder={"Special Advertising"}
 						{...register("specialAdvertising", { required: false })}
 					></textarea>
 				</FormInput>
+
 				<FormInput
 					label={
 						"Are there any specific organizations or departments that you would like to reach out to?"
@@ -370,10 +505,12 @@ const EventForm = () => {
 					error={errors.organizations}
 				>
 					<textarea
+						className="textarea"
 						placeholder={"Organizations"}
 						{...register("organizations", { required: false })}
 					></textarea>
 				</FormInput>
+
 				<div className="buttonSection">
 					<ActionButton type="submit" buttonText={"Submit"}></ActionButton>
 				</div>
