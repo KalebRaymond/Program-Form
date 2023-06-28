@@ -1,10 +1,3 @@
-html,
-body,
-#root,
-.App {
-	height: 100%;
-}
-
 .App {
 	text-align: center;
 	background-color: #fafafa;
@@ -14,9 +7,7 @@ body,
 	font-family: Verdana, sans-serif;
 
 	header {
-		width: 100%;
 		padding: 1rem;
-		margin-bottom: 0.5rem;
 
 		.pageTitle {
 			font-size: 2rem;

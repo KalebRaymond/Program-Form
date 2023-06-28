@@ -9,6 +9,7 @@ import emailjs from "emailjs-com";
 import FormInput from "../FormInput/FormInput";
 import { Controller, useForm } from "react-hook-form";
 import UpcomimgEventsTimePreview from "../UpcomingEventsTimePreview/UpcomingEventsTimePreview";
+import { render } from "@testing-library/react";
 
 const EventForm = () => {
 	emailjs.init("TdmGXBSlM9g0OIa13");
@@ -100,14 +101,14 @@ const EventForm = () => {
 			{
 				eventName:
 					"Event with reaaaaaalllllyyyyyyyyyyyyyyyy loooooooooooooooong name",
-				eventDate: "06/24/2023",
+				eventDate: "06/28/2023",
 				startTime: "10:00AM",
 				endTime: "11:00AM",
 				location: "Lawn",
 			},
 			{
 				eventName: "Event 2",
-				eventDate: "06/24/2023",
+				eventDate: "06/28/2023",
 				startTime: "11:00AM",
 				endTime: "11:00AM",
 				location: "Assembly Room",
@@ -159,6 +160,25 @@ const EventForm = () => {
 		}
 	};
 
+	const renderExistingEventsTable = (selectedDate) => {
+		if (!selectedDate) return null;
+
+		const existingEvents = upcomingEvents.filter(
+			(event) => new Date(event.eventDate).getTime() == selectedDate.getTime()
+		);
+
+		if (existingEvents.length) {
+			return (
+				<UpcomimgEventsTimePreview
+					selectedDate={eventDateValue}
+					upcomingEvents={existingEvents}
+				></UpcomimgEventsTimePreview>
+			);
+		} else {
+			return null;
+		}
+	};
+
 	return (
 		<div className={styles.EventForm}>
 			<form onSubmit={handleSubmit(onSubmit)}>
@@ -188,12 +208,7 @@ const EventForm = () => {
 										minDate={new Date()}
 									></DatePicker>
 								</div>
-								{eventDateValue && (
-									<UpcomimgEventsTimePreview
-										selectedDate={eventDateValue}
-										upcomingEvents={upcomingEvents}
-									></UpcomimgEventsTimePreview>
-								)}
+								{renderExistingEventsTable(field.value)}
 							</div>
 						)}
 					></Controller>
