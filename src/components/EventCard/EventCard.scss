@@ -1,0 +1,59 @@
+.EventCard {
+	border: 1px solid #ddd;
+	border-radius: 0.5rem;
+	box-shadow: 0 0 5px 1px #ddd;
+	padding: 1rem;
+
+	.container {
+		gap: 1rem;
+
+		.eventDetails {
+			gap: 0.5rem;
+			align-items: center;
+			flex-grow: 1;
+			min-width: 0;
+
+			.eventName {
+				font-weight: bold;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				overflow: hidden;
+			}
+		}
+
+		.actions {
+			float: left;
+			gap: 0.5rem;
+			flex-shrink: 0;
+
+			.btn {
+				border: 1px solid #ddd;
+				border-radius: 0.5rem;
+				background-color: transparent;
+				padding: 0.5rem;
+
+				&:hover {
+					text-decoration: underline;
+					cursor: pointer;
+				}
+
+				&:active {
+					-webkit-box-shadow: inset 1px 1px 5px #ddd;
+					-moz-box-shadow: inset 1px 1px 5px #ddd;
+					box-shadow: inset 1px 1px 5px #ddd;
+				}
+
+				&.edit {
+				}
+
+				&.delete {
+					color: red;
+				}
+			}
+		}
+	}
+}
+
+.flex {
+	display: flex;
+}

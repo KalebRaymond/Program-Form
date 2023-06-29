@@ -1,7 +1,7 @@
 import "./App.scss";
 
 import "react-datepicker/dist/react-datepicker.css";
-import EventForm from "./components/EventForm/EventForm";
+import ContextSwitcher from "./components/ContextSwitcher/ContextSwitcher";
 
 //Remove events from database
 
@@ -12,7 +12,7 @@ function App() {
 				<span className="pageTitle">Program Form</span>
 			</header>
 			<div className="content">
-				<EventForm></EventForm>
+				<ContextSwitcher></ContextSwitcher>
 			</div>
 		</div>
 	);

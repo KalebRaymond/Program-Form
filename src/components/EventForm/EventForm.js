@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import styles from "./EventForm.module.scss";
 
@@ -10,15 +10,17 @@ import FormInput from "../FormInput/FormInput";
 import { Controller, useForm } from "react-hook-form";
 import UpcomimgEventsTimePreview from "../UpcomingEventsTimePreview/UpcomingEventsTimePreview";
 import { render } from "@testing-library/react";
+import ContentContainer from "../ContentContainer/ContentContainer";
 
-const EventForm = () => {
+const EventForm = (props) => {
+	const {
+		upcomingEvents,
+		upcomingEventDates,
+		upcomingMarketingStartDates,
+		upcomingSignupsOpenDates,
+	} = props;
+
 	emailjs.init("TdmGXBSlM9g0OIa13");
-
-	const [upcomingEvents, setUpcomingEvents] = useState([]);
-	const [upcomingEventDates, setUpcomingEventDates] = useState([]);
-	const [upcomingMarketingStartDates, setUpcomingMarketingStartDates] =
-		useState([]);
-	const [upcomingSignupsOpenDates, setUpcomingSignupsOpenDates] = useState([]);
 
 	const {
 		control,
@@ -65,70 +67,6 @@ const EventForm = () => {
 
 		///Show event submitted screen
 	};
-
-	///Put this in a db service file
-	/*
-	const getUpcomingEventsPromise = () => {
-		return db
-			.collection("events")
-			.get()
-			.then((collection) => {
-				const events = collection.docs.map((doc) => doc.data());
-				return events;
-			})
-			.catch((error) => {
-				console.log("Error fetching db events", error);
-				return [];
-			});
-	};
-
-	useEffect(() => {
-		getUpcomingEventsPromise().then((events) => {
-			setUpcomingEvents(events);
-			setUpcomingEventDates(events.map((event) => new Date(event.eventDate)));
-			setUpcomingMarketingStartDates(
-				events.map((event) => new Date(event.marketingStartDate))
-			);
-			setUpcomingSignupsOpenDates(
-				events.map((event) => new Date(event.signupsOpenDate))
-			);
-		});
-	}, []);
-	*/
-
-	useEffect(() => {
-		const testEvents = [
-			{
-				eventName:
-					"Event with reaaaaaalllllyyyyyyyyyyyyyyyy loooooooooooooooong name",
-				eventDate: "06/28/2023",
-				startTime: "10:00AM",
-				endTime: "11:00AM",
-				location: "Lawn",
-			},
-			{
-				eventName: "Event 2",
-				eventDate: "06/28/2023",
-				startTime: "11:00AM",
-				endTime: "11:00AM",
-				location: "Assembly Room",
-			},
-			{
-				eventName: "Event 3",
-				eventDate: "06/24/2023",
-				startTime: "04:00PM",
-				endTime: "6:00PM",
-				location: "Cathedral of Learning",
-			},
-		];
-
-		setUpcomingEvents(testEvents);
-		setUpcomingEventDates(testEvents.map((event) => new Date(event.eventDate)));
-	}, []);
-
-	useEffect(() => {
-		console.log("upcomingEvents", upcomingEvents);
-	}, [upcomingEvents]);
 
 	const sendEmail = (eventData) => {
 		const serviceId = "service_k63n2um";
@@ -180,7 +118,7 @@ const EventForm = () => {
 	};
 
 	return (
-		<div className={styles.EventForm}>
+		<ContentContainer>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<FormInput label={"Event Date"}>
 					<Controller
@@ -530,7 +468,7 @@ const EventForm = () => {
 					<ActionButton type="submit" buttonText={"Submit"}></ActionButton>
 				</div>
 			</form>
-		</div>
+		</ContentContainer>
 	);
 };
 
